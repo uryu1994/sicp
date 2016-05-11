@@ -17,7 +17,7 @@
   (sqrt-iter 1.0 x))
 
 (define (better-good-enough? guess1 guess2)
-  (< (abs (- guess1 guess2)) (* guess1 0.001)))
+  (< (abs (- guess1 guess2)) 0.0000000001))
 
 (define (better-sqrt-iter guess1 x)
   (if (better-good-enough? guess1 (improve guess1 x))

@@ -1,8 +1,3 @@
-(define (abs x)
-  (cond ((> x 0) x)
-        ((= x 0) 0)
-        ((< x 0) (- x))))
-
 (define (square x)
   (* x x))
 
@@ -20,6 +15,7 @@
   (if (good-enough? guess x)
       guess
       (cube-root-iter (improve guess x)
-                 x)))
+                      x)))
+
 (define (cube-root x)
   (cube-root-iter 1.0 x))

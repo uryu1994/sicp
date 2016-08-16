@@ -6,6 +6,12 @@
           (iter (improve y))))
     (iter y)))
 
+(define (iterative-improve2 enough? improve)
+  (define (iter y)
+    (if (enough? y)
+        (iter (improve y))))
+  iter)
+
 (define (average x y)
   (/ (+ x y) 2.0))
 
@@ -15,16 +21,15 @@
     (< (abs (- (square guess) x)) 0.001))
   (define (improve guess)
     (average guess (/ x guess)))
-  ((iterative-improve good-enough? improve) x))
+  ((iterative-improve2 good-enough? improve) x))
 
 (define tolerance 0.00001)
 
 (define (fixed-point f first-guess)
   (define (close-enough? guess)
     (< (abs (- guess (f guess))) tolerance))
-  (f ((iterative-improve close-enough? f) first-guess)))
+  ((iterative-improve2 close-enough? f) first-guess))
 
 
-(print (sqrt 9))
-(print (fixed-point (lambda (y) (+ (sin y) (cos y)))
-             1.0))
+(print (sqrt 100))
+(print (fixed-point cos 1.0))

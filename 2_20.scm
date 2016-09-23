@@ -1,0 +1,7 @@
+(define (same-parity x . y)
+  (let ((parity? (if (even? x) even? odd?)))
+    (define (iter items)
+      (cond ((null? items) '())
+            ((parity? (car items)) (cons (car items) (iter (cdr items))))
+            (else (iter (cdr items)))))
+    (cons x (iter y))))

@@ -1,3 +1,6 @@
+(use slib)
+(require trace)
+
 (define (square-list items)
   (define (iter things answer)
     (if (null? things)
@@ -5,6 +8,7 @@
         (iter (cdr things) 
               (cons (square (car things))
                     answer))))
+  (trace iter)
   (iter items '()))
 
 ;;(square-list (list 1 2 3 4))

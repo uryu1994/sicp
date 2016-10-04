@@ -1,8 +1,10 @@
 (load "./2_17")
 
+(define nil ())
+
 (define (reverse items)
   (define (reverse-iter i r)
     (if (null? i)
         r
         (reverse-iter (cdr i) (cons (car i) r))))
-  (reverse-iter items ()))
+  (reverse-iter items nil))

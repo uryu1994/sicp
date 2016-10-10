@@ -17,4 +17,4 @@
   (cond ((null? items) '())
         ((not (pair? items)) items)
          (else (append (deep-reverse (cdr items))
-		       (list (deep-reverse (car items)))))))
+                       (list (deep-reverse (car items)))))))

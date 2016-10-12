@@ -12,8 +12,8 @@
 (define (square-tree tree)
   (cond ((null? tree) nil)
 	((not (pair? tree)) (square tree))
-	(else (cons (square-tree-2 (car tree))
-		    (square-tree-2 (cdr tree))))))
+	(else (cons (square-tree (car tree))
+                (square-tree (cdr tree))))))
 
 (square-tree
  (list 1

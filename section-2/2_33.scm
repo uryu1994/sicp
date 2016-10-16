@@ -8,10 +8,10 @@
 
 (accumulate + 0 (list 1 2 3 4 5))
 
-(define (map q sequence)
-  (accumulate (lambda (x y) (cons (q x) y)) nil sequence))
+(define (map-n p sequence)
+  (accumulate (lambda (x y) (cons (p x) y)) nil sequence))
 
-(map (lambda (x) (* x x)) (list 1 2 3 4 5))
+(map-n (lambda (x) (* x x)) (list 1 2 3 4 5))
 
 (define (append seq1 seq2)
   (accumulate cons seq2 seq1))

@@ -6,3 +6,9 @@
               coefficient-sequence))
 
 (horner-eval 2 (list 1 3 0 5 0 1))
+
+;; axxxxx + bxxxx + cxxx + dxx + ex + f
+;; (axxxx + bxxx + cxx + dx + e)x + f
+;; ((axxx + bxx + cx + d)x + e)x + f
+;; (((axx + bx + c)x + d)x + e)x + f
+;; ((((ax + b)x + c)x + d)x + e)x + f

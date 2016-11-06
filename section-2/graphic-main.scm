@@ -9,6 +9,7 @@
 (load "./2_49")
 (load "./2_50")
 (load "./2_51")
+(load "./2_52")
 
 (define frame (make-frame (make-vect 0 0) (make-vect 1 0) (make-vect 0 1)))
 
@@ -20,12 +21,12 @@
   (gl-color 0.0 0.0 0.0)
   (gl-begin GL_LINES)
 
-  ((rotate270 wave) frame)
+  ;;((rotate270 wave) frame)
   ;;  (wave frame)
   ;;  (draw-frame-outline frame)
   ;;  ((below wave wave) frame)
   ;; ((below2 wave wave) frame)
-  
+  (wave2 frame)
   (gl-end)
   (gl-flush)
   )

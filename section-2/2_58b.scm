@@ -34,4 +34,19 @@
         (car ans)
         ans)))
 
+(define (product? x)
+  (cond ((pair? (memq '+ x)) #f)
+        ((pair? (memq '* x)) #t)
+        (else #f)))
+
+(define (multiplier p)
+  (car p))
+
+(define (multiplicand p)
+  (let ((ans (cdr (memq '* p))))
+    (if (eq? 1 (length ans))
+        (car ans)
+        ans)))
+
 (deriv '(x + 3 * (x + y + 2)) 'x)
+(deriv '(x + (3 * ((x * x) + (x * (y + 2))))) 'x)

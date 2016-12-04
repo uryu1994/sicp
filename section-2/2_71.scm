@@ -1,0 +1,58 @@
+(load "./2_70")
+
+(define (expt-pair pairs)
+  (let ((n (length pairs)))
+    (define (iter pairs)
+      (let ((i (- n (length pairs))))
+        (if (null? pairs)
+            '()
+            (cons (list (car pairs) (expt 2 i))
+                  (iter (cdr pairs))))))
+    (iter pairs)))
+
+(define set5 '(A B C D E))
+(define set10 (append set5 '(F G H I J)))
+(expt-pair set5)
+(expt-pair set10)
+
+(define set5-huffman-tree (generate-huffman-tree (expt-pair set5)))
+(define set10-huffman-tree (generate-huffman-tree (expt-pair set10)))
+;;(print set5-huffman-tree)
+;;(print set10-huffman-tree)
+
+(encode '(A) set5-huffman-tree)
+;; (0 0 0 0)
+(encode '(B) set5-huffman-tree)
+;; (0 0 0 1)
+(encode '(C) set5-huffman-tree)
+;; (0 0 1) 
+(encode '(D) set5-huffman-tree)
+;; (0 1)
+(encode '(E) set5-huffman-tree)
+;; (1)
+
+(encode '(A) set10-huffman-tree)
+;; (0 0 0 0 0 0 0 0 0)
+(encode '(B) set10-huffman-tree)
+;; (0 0 0 0 0 0 0 0 1)
+(encode '(C) set10-huffman-tree)
+;; (0 0 0 0 0 0 0 1)
+(encode '(D) set10-huffman-tree)
+;; (0 0 0 0 0 0 1)
+(encode '(E) set10-huffman-tree)
+;; (0 0 0 0 0 1)
+(encode '(F) set10-huffman-tree)
+;; (0 0 0 0 1)
+(encode '(G) set10-huffman-tree)
+;; (0 0 0 1)
+(encode '(H) set10-huffman-tree)
+;; (0 0 1)
+(encode '(I) set10-huffman-tree)
+;; (0 1)
+(encode '(J) set10-huffman-tree)
+;; (1)
+
+;; n = 5  -> 最高頻度の記号の符号化に4bit, 最低頻度の記号の符号化に1bit必要
+;; n = 10 -> 最高頻度の記号の符号化に9bit, 最低頻度の記号の符号化に1bit必要
+
+;; n記号のHuffman木の最高頻度の符号化には(n - 1)bit, 最低頻度の記号の符号化には1bit必要となる

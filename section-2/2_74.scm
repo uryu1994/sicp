@@ -83,10 +83,12 @@
 ;; 2.74c
 (define (find-employee-record db-list name)
   (define (iter db-list)
-    (let ((record (get-record (car db-list) name)))
-      (if (eq? record #f)
-          (iter (cdr db-list))
-          record)))
+    (if (null? db-list)
+        #f
+        (let ((record (get-record (car db-list) name)))
+          (if (eq? record #f)
+              (iter (cdr db-list))
+              record))))
   (iter db-list))
   
 
@@ -94,7 +96,7 @@
 (get-salary tim-db 'hoge1)
 (get-record sicp-db 'poi)
 (get-salary sicp-db 'opi)
-(find-employee-record all-db-list 'hoge2)
+(find-employee-record all-db-list 'npg)
 
 ;; 2.74d
 ;; (install-***-package)のように

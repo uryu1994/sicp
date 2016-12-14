@@ -95,6 +95,8 @@
 (install-product-deriv-package)
 (install-exponent-deriv-package)
 
+(deriv '(+ x (* x y)) 'x)
+
 ;; 2.73d
 ;; (put <op> <type> <item>) -> (put <type> <op> <item>)
 ;; (get <op> <type>)        -> (get <type> <op>)

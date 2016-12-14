@@ -20,4 +20,7 @@
           ((eq? op 'magnitude) r)
           ((eq? op 'angle) a)
           (else
-           (error "Unknown op -- MAKE-FROM-MAG-ANG" op)))))
+           (error "Unknown op -- MAKE-FROM-MAG-ANG" op))))
+  dipatch)
+
+((make-from-real-imag 1 4) 'angle)

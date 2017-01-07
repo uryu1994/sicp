@@ -207,14 +207,10 @@
 (install-rational-package)
 (install-complex-package)
 
-(add (make-scheme-number 1)
-     (make-scheme-number 6))
+(add 1 6)
 
-(sub (make-scheme-number 3)
-     (make-scheme-number 2))
+(sub 3 2)
 
-(mul (make-scheme-number 2)
-     (make-scheme-number 4))
+(mul 2 4)
 
-(div (make-scheme-number 10)
-     (make-scheme-number 2))
+(div 10 2)

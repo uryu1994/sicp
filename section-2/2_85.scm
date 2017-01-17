@@ -26,10 +26,9 @@
     (define (iter twr)
       (if (null? twr)
           #f
-          (let ((ty (car twr)))
-            (cond ((eq? type1 ty) type1)
-                  ((eq? type2 ty) type2)
-                  (else (iter (cdr twr)))))))
+          (cond ((eq? type1 (car twr)) type1)
+                ((eq? type2 (car twr)) type2)
+                (else (iter (cdr twr))))))
     (iter type-tower)))
 
 (define (drop x)
@@ -47,30 +46,37 @@
       x
       (coerce-to (raise x) tag)))
 
+(define (coerce-higher-type args)
+  (let ((a1 (car args))
+        (a2 (cadr args)))
+    (let ((type1 (type-tag a1))
+          (type2 (type-tag a2)))
+      (if (eq? type1 type2)
+          args
+          (let ((tag (type-higher? type1 type2)))
+            (if (eq? tag type1)
+                (coerce-higher-type (list a1 (raise a2)))
+                (coerce-higher-type (list (raise a1) a2))))))))
+        
+
 (define (apply-generic op . args)
   (let ((type-tags (map type-tag args)))
     (let ((proc (get op type-tags)))
       (if proc
-          (apply proc (map contents args))
+          (drop (apply proc (map contents args)))
           (if (= (length args) 2)
               (let ((type1 (car type-tags))
-                    (type2 (cadr type-tags))
-                    (a1 (car args))
-                    (a2 (cadr args)))
+                    (type2 (cadr type-tags)))
                 (if (not (eq? type1 type2))
-                    (let ((coercion-type (type-higher? type1 type2)))
-                      (cond ((eq? coercion-type type1)
-                             (apply-generic op a1 (coerce-to a2 coercion-type)))
-                            ((eq? coercion-type type2)
-                             (apply-generic op (coerce-to a1 coercion-type) a2))
-                            (else
-                             (error "No method for these types"
-                                    (list op type-tags)))))
+                    (let ((coerced-args (coerce-higher-type args)))
+                      (let ((proc2 (get op (map type-tag coerced-args))))
+                        (if proc2
+                            (drop (apply proc2 (map contents coerced-args)))
+                            (error "No method for these types" (list op type-tags)))))
                     (error "No method for these types"
                            (list op type-tags))))
               (error "No method for these types"
                      (list op type-tags)))))))
-
 
 ;; 汎用選択子
 (define (add x y) (apply-generic 'add x y))
@@ -86,7 +92,11 @@
 ;; 2.80追加
 (define (=zero? x) (apply-generic '=zero? x))
 ;; 2.83追加
-(define (raise x) (apply-generic 'raise x))
+(define (raise x)
+  (let ((proc (get 'raise (type-tag x))))
+    (if proc
+        (proc (contents x))
+        #f)))
 
 (define (project x)
   (let ((proc (get 'project (type-tag x))))
@@ -168,7 +178,7 @@
   (put '=zero? '(scheme-number)
        (lambda (x) (= x 0)))
   ;; 2.83追加
-  (put 'raise '(scheme-number)
+  (put 'raise 'scheme-number
        (lambda (x) (make-rational x 1)))
   'done)
 
@@ -234,7 +244,7 @@
   (put '=zero? '(rational) =zero-rat?)
 
   ;; 2.83追加
-  (put 'raise '(rational) raise-rat)
+  (put 'raise 'rational raise-rat)
 
   (put 'project 'rational rational->integer)
   'done)
@@ -261,8 +271,8 @@
   (put '=zero? '(real)
        (lambda (x) (= x 0.0)))
   (put 'make 'real
-       (lambda (x) (tag x)))
-  (put 'raise '(real)
+       (lambda (x) (tag (* x 1.0))))
+  (put 'raise 'real
        (lambda (x) (make-complex-from-real-imag x 0)))
   (put 'project 'real real->rational)
   'done)
@@ -348,9 +358,17 @@
 (install-complex-package)
 (install-real-package)
 
+(use slib)
+(require 'trace)
+(trace apply-generic)
+(trace drop)
+
 (project (make-real 1.2))
 (drop (make-real 1.0))
 (drop (make-rational 3 1))
-(drop (make-complex-from-real-imag 2 0))
-(project (make-complex-from-real-imag 2 5))
+;(drop (make-complex-from-real-imag 2 0))
+;(project (make-complex-from-real-imag 2 5))
 (raise (make-rational 1 3))
+
+(add (make-rational 2 3) (make-rational 1 3))
+(add (make-real 1.2) (make-rational 1 5))

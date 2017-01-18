@@ -44,7 +44,11 @@
 ;; 2.80追加
 (define (=zero? x) (apply-generic '=zero? x))
 ;; 2.83追加
-(define (raise x) (apply-generic 'raise x))
+(define (raise x)
+  (let ((proc (get 'raise (type-tag x))))
+    (if proc
+        (proc (contents x))
+        #f)))
 
 ;; 直交座標表現
 (define (install-rectangular-package)
@@ -120,7 +124,7 @@
   (put '=zero? '(scheme-number)
        (lambda (x) (= x 0)))
   ;; 2.83追加
-  (put 'raise '(scheme-number)
+  (put 'raise 'scheme-number
        (lambda (x) (make-rational (contents x) 1)))
   'done)
 
@@ -183,7 +187,7 @@
   (put '=zero? '(rational) =zero-rat?)
 
   ;; 2.83追加
-  (put 'raise '(rational)
+  (put 'raise 'rational
        (lambda (x) (make-real (/ (numer x) (denom x)))))
   'done)
   
@@ -206,7 +210,7 @@
        (lambda (x) (= x 0.0)))
   (put 'make 'real
        (lambda (x) (tag x)))
-  (put 'raise '(real)
+  (put 'raise 'real
        (lambda (x) (make-complex-from-real-imag x 0)))
   'done)
 

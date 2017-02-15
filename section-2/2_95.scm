@@ -557,7 +557,7 @@
   (put 'greatest-common-divisor '(polynomial polynomial)
        (lambda (p1 p2) (tag (gcd-poly p1 p2))))
 
-  (trace gcd-terms remainder-terms)
+  (trace gcd-terms)
 
   'done)
 

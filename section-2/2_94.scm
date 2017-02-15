@@ -463,7 +463,7 @@
         (make-poly (variable p1)
                    (gcd-terms (term-list p1)
                               (term-list p2)))
-        (error "Polys not in same var -- DIV-POLY"
+        (error "Polys not in same var -- GCD-POLY"
                (list p1 p2))))
   
   (define (add-terms L1 L2)

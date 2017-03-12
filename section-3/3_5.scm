@@ -1,6 +1,6 @@
 (use srfi-27)
 
-(define random random-integer)
+(define random random-real)
 
 (define (estimate-pi trials)
   (sqrt (/ 6 (monte-carlo trials cesaro-test))))
@@ -53,5 +53,5 @@
 (define (p-test x y)
   (<= (+ (square (- x 5)) (square (- y 7))) (square 3)))
 
-(pi-from-monte-carlo-simulation (estimate-integral p-test 2 8 4 10 100000.0) (square 3))
-(pi-from-monte-carlo-simulation (estimate-integral p-test 2 8 4 10 100000.0) (square 3))
+(pi-from-monte-carlo-simulation (estimate-integral p-test 2 8 4 10 100000) (square 3))
+(pi-from-monte-carlo-simulation (estimate-integral p-test 2 8 4 10 100000) (square 3))

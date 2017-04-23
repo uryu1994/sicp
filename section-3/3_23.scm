@@ -55,17 +55,25 @@
 (define (front-delete-queue! queue)
   (cond ((empty-queue? queue)
          (error "DELETE! called with an empty queue" queue))
+        ((eq? (front-ptr queue) (rear-ptr queue))
+         (set-front-ptr! queue '())
+         (set-rear-ptr! queue '())
+         queue)
         (else
-         (set-prev-item! (next-item (front-ptr queue)) '())
          (set-front-ptr! queue (next-item (front-ptr queue)))
+         (set-prev-item! (front-ptr queue) '())
          queue)))
 
 (define (rear-delete-queue! queue)
   (cond ((empty-queue? queue)
          (error "DELETE! called with an empty queue" queue))
+        ((eq? (front-ptr queue) (rear-ptr queue))
+         (set-front-ptr! queue '())
+         (set-rear-ptr! queue '())
+         queue)
         (else
-         (set-next-item! (prev-item (rear-ptr queue)) '())
          (set-rear-ptr! queue (prev-item (rear-ptr queue)))
+         (set-next-item! (rear-ptr queue) '())
          queue)))
 
 (define (print-queue queue)
@@ -77,7 +85,10 @@
 
 (define q (make-queue))
 (front-insert-queue! q 'a)
+(rear-insert-queue! q 'b)
 (print-queue q)
 (rear-insert-queue! q 'c)
+(front-insert-queue! q 'd)
 (rear-delete-queue! q)
 (front-delete-queue! q)
+(empty-queue? q)

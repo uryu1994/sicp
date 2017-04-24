@@ -16,7 +16,7 @@
 (define (set-prev-item! item prev)
   (set-car! (cdr item) prev))
 
-(define (empty-queue? queue) (null? (front-ptr queue)))
+(define (empty-queue? queue) (or (null? (front-ptr queue)) (null? (rear-ptr queue))))
 (define (make-queue) (cons '() '()))
 
 (define (front-queue queue)
@@ -57,31 +57,29 @@
          (error "DELETE! called with an empty queue" queue))
         ((eq? (front-ptr queue) (rear-ptr queue))
          (set-front-ptr! queue '())
-         (set-rear-ptr! queue '())
          queue)
         (else
          (set-front-ptr! queue (next-item (front-ptr queue)))
-         (set-prev-item! (front-ptr queue) '())
          queue)))
 
 (define (rear-delete-queue! queue)
   (cond ((empty-queue? queue)
          (error "DELETE! called with an empty queue" queue))
         ((eq? (front-ptr queue) (rear-ptr queue))
-         (set-front-ptr! queue '())
          (set-rear-ptr! queue '())
          queue)
         (else
          (set-rear-ptr! queue (prev-item (rear-ptr queue)))
-         (set-next-item! (rear-ptr queue) '())
          queue)))
 
 (define (print-queue queue)
-  (define (recur item)
-    (if (null? item)
-        '()
-        (cons (value-of-item item) (recur (next-item item)))))
-  (recur (front-ptr queue)))
+  (define (print-iter item)
+    (if (eq? item (rear-ptr queue))
+        (cons (value-of-item item) '())
+        (cons (value-of-item item) (print-iter (next-item item)))))
+  (if (empty-queue? queue)
+      '()
+      (print-iter (front-ptr queue))))
 
 (define q (make-queue))
 (front-insert-queue! q 'a)

@@ -32,7 +32,7 @@
 (set-signal! input-2 1)
 (propagate)
 
-;; procが即時実行されない場合…
-;; add-action-procedureを登録しているだけとなるため，after-delayも実行されない
-;; after-delayはadd-to-agenda!を呼んで指定した時刻にactionを実行するようにしている
-;; そのため値がおかしくなる
+;; もし(accept-action-procedure!)手続きの最後で(proc)が呼ばれていない場合
+;; half-adderの場合，内部のinverterと繋いでいる回路eは1にする必要がある
+;; (proc)が呼ばれないことによりこの初期化がされなくなるため誤った初期値のまま
+;; 次第書きの順序で実行されることになる

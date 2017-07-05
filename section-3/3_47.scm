@@ -35,11 +35,12 @@
         (counter 0))
     (define (acquire)
       (the-mutex 'acquire)
-      (if (> counter n)
+      (if (< counter n)
+          (begin (set! counter (+ counter 1))
+                 (the-mutex 'release))
           (begin (the-mutex 'release)
                  (acquire)); retry
-          (begin (set! counter (+ counter 1))
-                 (the-mutex 'release))))
+          ))
     (define (release)
       (the-mutex 'acquire)
       ;; error check
@@ -54,7 +55,7 @@
                          m))))
     dispatch))
 
-;; a)
+;; b)
 (define (make-semaphore n)
   (let ((cell (list false))
         (counter 0))

@@ -5,7 +5,7 @@
 ;;   (stream-map * s1 s2))
 
 (define factorials (cons-stream 1
-                                (mul-streams integers factorials)))
+                                (mul-streams factorials (stream-cdr integers))))
 
 (stream-ref factorials 0)
 (stream-ref factorials 1)

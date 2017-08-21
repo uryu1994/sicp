@@ -37,6 +37,17 @@
   (newline)
   (display x))
 
+;; Reference: http://wat-aro.hatenablog.com/entry/2015/12/10/190440
+(define (stream-head s n)
+  (let iter ((s s)
+             (n n))
+    (if (zero? n)
+        'done
+        (begin
+          (display (stream-car s))
+          (newline)
+          (iter (stream-cdr s) (- n 1))))))
+
 (define (stream-car stream) (car stream))
 
 (define (stream-cdr stream) (force (cdr stream)))
@@ -83,6 +94,13 @@
 (define (mul-streams s1 s2)
   (stream-map * s1 s2))
 
+;; 3.55's Answer
+(define (partial-sums S)
+  (cons-stream (stream-car S)
+               (add-streams
+                (stream-cdr S)
+                (partial-sums S))))
+
 ;; 3.60's Answer
 (define (mul-series s1 s2)
   (cons-stream (* (stream-car s1) (stream-car s2))
@@ -100,3 +118,27 @@
                  (stream-map (lambda (guess)
                                (sqrt-improve guess x))
                              guesses))))
+
+(define (pi-summands n)
+  (cons-stream (/ 1.0 n)
+               (stream-map - (pi-summands (+ n 2)))))
+
+(define pi-stream
+  (scale-stream (partial-sums (pi-summands 1)) 4))
+
+(define (euler-transform s)
+  (let ((s0 (stream-ref s 0))           ; Sn-1
+        (s1 (stream-ref s 1))           ; Sn
+        (s2 (stream-ref s 2)))          ; Sn+1
+    (cons-stream (- s2 (/ (square (- s2 s1))
+                          (+ s0 (* -2 s1) s2)))
+                 (euler-transform (stream-cdr s)))))
+
+(define (make-tableau transform s)
+  (cons-stream s
+               (make-tableau transform
+                             (transform s))))
+
+(define (accelerated-sequence transform s)
+  (stream-map stream-car
+              (make-tableau transform s)))

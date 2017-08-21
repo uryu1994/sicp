@@ -1,10 +1,13 @@
 (load "./stream")
 
-(define (partial-sums S)
-  (cons-stream (stream-car S)
-               (add-streams
-                (stream-cdr S)
-                (partial-sums S))))
+;; Include stream.scm
+
+;; (define (partial-sums S)
+;;   (cons-stream (stream-car S)
+;;                (add-streams
+;;                 (stream-cdr S)
+;;                 (partial-sums S))))
+
 
 (stream-ref (partial-sums integers) 0)
 (stream-ref (partial-sums integers) 1)

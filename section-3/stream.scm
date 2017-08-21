@@ -88,3 +88,15 @@
   (cons-stream (* (stream-car s1) (stream-car s2))
 	       (add-streams (scale-stream (stream-cdr s2) (stream-car s1))
 			    (mul-series (stream-cdr s1) s2))))
+
+(define (average x y) (/ (+ x y) 2))
+
+(define (sqrt-improve guess x)
+  (average guess (/ x guess)))
+
+(define (sqrt-stream x)
+  (define guesses
+    (cons-stream 1.0
+                 (stream-map (lambda (guess)
+                               (sqrt-improve guess x))
+                             guesses))))

@@ -1,23 +1,23 @@
 (load "./stream")
 
-(define (merge-weighted pairs1 pairs2 weight)
-  (cond ((stream-null? (stream-car pairs1)) pairs2)
-        ((stream-null? (stream-car pairs2)) pairs1)
-        (else
-         (let ((p1car (stream-car pairs1))
-               (p2car (stream-car pairs2)))
-           (if (< (weight p1car) (weight p2car))
-	       (cons-stream p1car (merge-weighted (stream-cdr pairs1) pairs2 weight))
-	       (cons-stream p2car (merge-weighted pairs1 (stream-cdr pairs2) weight)))))))
+;; (define (merge-weighted pairs1 pairs2 weight)
+;;   (cond ((stream-null? (stream-car pairs1)) pairs2)
+;;         ((stream-null? (stream-car pairs2)) pairs1)
+;;         (else
+;;          (let ((p1car (stream-car pairs1))
+;;                (p2car (stream-car pairs2)))
+;;            (if (< (weight p1car) (weight p2car))
+;; 	       (cons-stream p1car (merge-weighted (stream-cdr pairs1) pairs2 weight))
+;; 	       (cons-stream p2car (merge-weighted pairs1 (stream-cdr pairs2) weight)))))))
 
-(define (weighted-pairs s t weight)
-  (cons-stream
-   (list (stream-car s) (stream-car t))
-   (merge-weighted
-    (stream-map (lambda (x) (list (stream-car s) x))
-                (stream-cdr t))
-    (weighted-pairs (stream-cdr s) (stream-cdr t) weight)
-    weight)))
+;; (define (weighted-pairs s t weight)
+;;   (cons-stream
+;;    (list (stream-car s) (stream-car t))
+;;    (merge-weighted
+;;     (stream-map (lambda (x) (list (stream-car s) x))
+;;                 (stream-cdr t))
+;;     (weighted-pairs (stream-cdr s) (stream-cdr t) weight)
+;;     weight)))
 
 ;; a
 (define (add-pairs-weight pair)

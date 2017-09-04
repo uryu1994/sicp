@@ -5,7 +5,7 @@
    (list (stream-car s) (stream-car t) (stream-car u))
    (interleave
     (stream-map (lambda (x) (cons (stream-car s) x))
-		(pairs t u))
+		(pairs (stream-cdr t) (stream-cdr u)))
     (triples (stream-cdr s) (stream-cdr t) (stream-cdr u)))))
 
 (define triples-of-integers (triples integers integers integers))

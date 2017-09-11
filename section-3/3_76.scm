@@ -12,7 +12,7 @@
   (/ (+ x y) 2))
 
 (define (smooth s)
-  (stream-map average s (cons-stream 0 s)))
+  (stream-map average s (stream-cdr s)))
 
 (define (make-zero-crossings input-stream last-value)
   (cons-stream

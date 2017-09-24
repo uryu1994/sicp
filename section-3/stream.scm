@@ -182,3 +182,9 @@
                 (stream-cdr t))
     (weighted-pairs (stream-cdr s) (stream-cdr t) weight)
     weight)))
+
+(define (list->stream list)
+  (if (null? list)
+      the-empty-stream
+      (cons-stream (car list)
+		   (list->stream (cdr list)))))

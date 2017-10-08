@@ -1,6 +1,23 @@
 (define true #t)
 (define false #f)
 
+(define apply-in-underlying-scheme apply)
+
+;; 4.1.1 apply
+(define (apply procedure arguments)
+  (cond ((primitive-procedure? procedure)
+	 (apply-primitive-procedure procedure arguments))
+	((compound-procedure? procedure)
+	 (eval-sequence
+	  (procedure-body procedure)
+	  (extend-environment
+	   (procedure-parameters procedure)
+	   arguments
+	   (procedure-environment procedure))))
+	(else
+	 (error
+	  "Unknown procedure type -- APPLY" procedure))))
+
 ;; 4.1.1 eval
 (define (eval exp env)
   (cond ((self-evaluating? exp) exp)
@@ -22,20 +39,6 @@
 	(else
 	 (error "Unknown expression type -- EVAL" exp))))
 
-;; 4.1.1 apply
-(define (apply procedure arguments)
-  (cond ((primitive-procedure? procedure)
-	 (apply-primitive-procedure procedure arguments))
-	((compound-procedure? procedure)
-	 (eval-sequence
-	  (procedure-body procedure)
-	  (extend-environment
-	   (procedure-parameters procedure)
-	   arguments
-	   (procedure-environment procedure))))
-	(else
-	 (error
-	  "Unknown procedure type -- APPLY" procedure))))
 
 ;; 4.1.1 Procedure arguments
 (define (list-of-values exps env)
@@ -270,6 +273,7 @@
         (list 'cdr cdr)
         (list 'cons cons)
         (list 'null? null?)
+	(list '+ +)
 	;;⟨基本手続きが続く⟩
         ))
 (define (primitive-procedure-names)
@@ -309,7 +313,5 @@
                      ))
       (display object)))
 
-
-(define apply-in-underlying-scheme apply)
 (define the-global-environment (setup-environment))
 (driver-loop)

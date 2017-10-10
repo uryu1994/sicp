@@ -26,6 +26,8 @@
 	((assignment? exp) (eval-assignment exp env))
 	((definition? exp) (eval-definition exp env))
 	((if? exp) (eval-if exp env))
+	((and? exp) (eval-and (and-clauses exp) env))
+	((or? exp) (eval-or (or-clauses exp) env))
 	((lambda? exp)
 	 (make-procedure (lambda-parameters exp)
 			 (lambda-body exp)
@@ -176,6 +178,33 @@
             (make-if (cond-predicate first)
                      (sequence->exp (cond-actions first))
                      (expand-clauses rest))))))
+
+;; Q4.03
+(define (and? exp) (tagged-list? exp 'and))
+(define (and-clauses exp) (cdr exp))
+(define (and-first-exp exp) (car exp))
+(define (and-rest-exps exp) (cdr exp))
+(define (eval-and exp env)
+  (if (null? exp)
+      true
+      (let ((first (eval (and-first-exp exp) env))
+	    (rest (and-rest-exps exp)))
+	(if (true? first)
+	    (eval-and rest env)
+	    false))))
+
+(define (or? exp) (tagged-list? exp 'or))
+(define (or-clauses exp) (cdr exp))
+(define (or-first-exp exp) (car exp))
+(define (or-rest-exps exp) (cdr exp))
+(define (eval-or exp env)
+  (if (null? exp)
+      false
+      (let ((first (eval (or-first-exp exp) env))
+	    (rest (or-rest-exps exp)))
+	(if (true? first)
+	    first
+	    (eval-or rest env)))))
 
 ;; 4.1.3 Testing of predicates
 (define (true? x)

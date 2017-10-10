@@ -303,6 +303,7 @@
         (list 'cons cons)
         (list 'null? null?)
 	(list '+ +)
+	(list 'assoc assoc)
 	;;⟨基本手続きが続く⟩
         ))
 (define (primitive-procedure-names)

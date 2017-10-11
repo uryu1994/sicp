@@ -20,3 +20,5 @@
 	((cond? exp) (eval (cond->if exp) env))
 	(else
 	 (error "Unknown expression type -- EVAL" exp))))
+
+;; application?がtrueになるのでdefineが手続き作用として扱われてしまう

@@ -35,8 +35,10 @@
 	((begin? exp) 
 	 (eval-sequence (begin-actions exp) env))
 	((cond? exp) (eval (cond->if exp) env))
-	;; Question 4.03
+	;; Question 4.06
 	((let? exp) (eval (let->combination exp) env))
+	;; Question 4.07
+	((let*? exp) (eval (let*->nested-lets exp) env))
 	((application? exp)
 	 (apply (eval (operator exp) env)
                 (list-of-values (operands exp) env)))
@@ -222,6 +224,18 @@
    (make-lambda vars (let-body exp))
    value-exps))
 
+;; Question 4.07
+(define (let*? exp) (tagged-list? exp 'let*))
+(define (let*-clauses exp) (cadr exp))
+(define (let*-body exp) (caddr exp))
+
+(define (let*->nested-lets exp)
+  (define (make-lets clauses)
+    (if (null? clauses)
+	(let*-body exp)
+	(list 'let (list (car clauses))
+	      (make-lets (cdr clauses)))))
+  (make-lets (let-clauses exp)))
 
 ;; 4.1.3 Testing of predicates
 (define (true? x)

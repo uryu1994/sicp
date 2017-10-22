@@ -35,6 +35,8 @@
 	((begin? exp) 
 	 (eval-sequence (begin-actions exp) env))
 	((cond? exp) (eval (cond->if exp) env))
+	;; Question 4.03
+	((let? exp) (eval (let->combination exp) env))
 	((application? exp)
 	 (apply (eval (operator exp) env)
                 (list-of-values (operands exp) env)))
@@ -179,7 +181,7 @@
                      (sequence->exp (cond-actions first))
                      (expand-clauses rest))))))
 
-;; Q4.03
+;; Question 4.03
 (define (and? exp) (tagged-list? exp 'and))
 (define (and-clauses exp) (cdr exp))
 (define (and-first-exp exp) (car exp))
@@ -205,6 +207,21 @@
 	(if (true? first)
 	    first
 	    (eval-or rest env)))))
+
+;; Question 4.06
+(define (let? exp) (tagged-list? exp 'let))
+(define (let-clauses exp) (cadr exp))
+(define (let-clause-var clause) (car clause))
+(define (let-clause-value-exp clause) (cadr clause))
+(define (let-body exp) (cddr exp))
+
+(define (let->combination exp)
+  (define vars (map let-clause-var (let-clauses exp)))
+  (define value-exps (map let-clause-value-exp (let-clauses exp)))
+  (cons
+   (make-lambda vars (let-body exp))
+   value-exps))
+
 
 ;; 4.1.3 Testing of predicates
 (define (true? x)
@@ -304,6 +321,8 @@
         (list 'cons cons)
         (list 'null? null?)
 	(list '+ +)
+	(list '- -)
+	(list '* *)
 	(list 'assoc assoc)
 	;;⟨基本手続きが続く⟩
         ))

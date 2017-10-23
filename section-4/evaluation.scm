@@ -39,6 +39,8 @@
 	((let? exp) (eval (let->combination exp) env))
 	;; Question 4.07
 	((let*? exp) (eval (let*->nested-lets exp) env))
+	;; Question 4.09
+	((while? exp) (eval (while->let exp) env))
 	((application? exp)
 	 (apply (eval (operator exp) env)
                 (list-of-values (operands exp) env)))
@@ -264,6 +266,21 @@
    (make-lambda vars (let-body exp))
    value-exps))
 
+;; Question 4.09
+(define (while? exp) (tagged-list? exp 'while))
+(define (while-predicate exp) (cadr exp))
+(define (while-body exp) (cddr exp))
+
+(define (while->let exp)
+  (let ((predicate (while-predicate exp))
+	(body (while-body exp)))
+    (list 'let 'while-loop '()
+	  (make-if predicate
+		   (append (cons 'begin body)
+			   (list (cons 'while-loop '())))
+		    'true))))
+
+
 ;; 4.1.3 Testing of predicates
 (define (true? x)
   (not (eq? x false)))
@@ -366,6 +383,8 @@
 	(list '* *)
 	(list '= =)
 	(list 'assoc assoc)
+	(list '< <)
+	(list 'print print)
 	;;⟨基本手続きが続く⟩
         ))
 (define (primitive-procedure-names)

@@ -1,5 +1,7 @@
 (load "./evaluation")
 
+
+;; TODO: 2回評価させない
 (define (expand-clauses clauses)
   (if (null? clauses)
       'false                          ; else節なし

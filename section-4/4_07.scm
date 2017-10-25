@@ -20,4 +20,4 @@
 	(let*-body exp)
 	(list 'let (list (car clauses))
 	      (make-lets (cdr clauses)))))
-  (make-lets (let-clauses exp)))
+  (make-lets (let*-clauses exp)))

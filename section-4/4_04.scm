@@ -48,4 +48,6 @@
 ;; 	(else
 ;; 	 (error "Unknown expression type -- EVAL" exp))))
 
+;; TODO: 導出された式
+
 (driver-loop)

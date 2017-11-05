@@ -1,0 +1,20 @@
+(define (unbind? exp) (tagged-list? exp 'unbind!))
+
+(define (eval-unbinding exp env)
+  (unbind-variable! (unbinding-variable exp) env))
+
+(define (unbinding-variable exp) (cadr exp))
+   
+(define (unbind-variable! var env)
+  (let ((frame (first-frame env)))
+    (define (scan vars vals)
+      (cond ((null? vars)
+	     (error "Unbound Variable" var))
+	    ((eq? var (car vars))
+	     (set-car! vars (cadr vars))
+	     (set-cdr! vars (cddr vars))
+	     (set-car! vals (cadr vals))
+	     (set-cdr! vals (cddr vals)))
+	    (else (scan (cdr vars) (cdr vals)))))
+    (scan (frame-variables frame)
+	  (frame-values frame))))

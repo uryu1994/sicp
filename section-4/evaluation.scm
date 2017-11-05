@@ -41,6 +41,8 @@
 	((let*? exp) (eval (let*->nested-lets exp) env))
 	;; Question 4.09
 	((while? exp) (eval (while->let exp) env))
+	;; Question 4.13
+	((unbind? exp) (eval-unbinding exp env))
 	((application? exp)
 	 (apply (eval (operator exp) env)
                 (list-of-values (operands exp) env)))
@@ -356,6 +358,29 @@
             (else (scan (cdr vars) (cdr vals)))))
     (scan (frame-variables frame)
           (frame-values frame))))
+
+;; Question 4.13
+(define (unbind? exp) (tagged-list? exp 'unbind!))
+
+(define (eval-unbinding exp env)
+  (unbind-variable! (unbinding-variable exp) env))
+
+(define (unbinding-variable exp) (cadr exp))
+   
+(define (unbind-variable! var env)
+  (let ((frame (first-frame env)))
+    (define (scan vars vals)
+      (cond ((null? vars)
+	     (error "Unbound Variable" var))
+	    ((eq? var (car vars))
+	     (set-car! vars (cadr vars))
+	     (set-cdr! vars (cddr vars))
+	     (set-car! vals (cadr vals))
+	     (set-cdr! vals (cddr vals)))
+	    (else (scan (cdr vars) (cdr vals)))))
+    (scan (frame-variables frame)
+	  (frame-values frame))))
+
 
 ;; 4.1.4 Running the Evaluator as a Program
 (define (setup-environment)

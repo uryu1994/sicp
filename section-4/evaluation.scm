@@ -291,7 +291,8 @@
 
 ;; 4.1.3 Representing procedures
 (define (make-procedure parameters body env)
-  (list 'procedure parameters body env))
+  (list 'procedure parameters (scan-out-defines body) env))
+
 (define (compound-procedure? p)
   (tagged-list? p 'procedure))
 (define (procedure-parameters p) (cadr p))
@@ -324,7 +325,9 @@
       (cond ((null? vars)
              (env-loop (enclosing-environment env)))
             ((eq? var (car vars))
-             (car vals))
+	     (if (eq? (car vals) '*unassigned*)
+		 (error "variable is unassigned" var)
+		 (car vals)))
             (else (scan (cdr vars) (cdr vals)))))
     (if (eq? env the-empty-environment)
         (error "Unbound variable" var)
@@ -353,7 +356,7 @@
     (define (scan vars vals)
       (cond ((null? vars)
              (add-binding-to-frame! var val frame))
-            ((eq? var (car vars))
+           ((eq? var (car vars))
              (set-car! vals val))
             (else (scan (cdr vars) (cdr vals)))))
     (scan (frame-variables frame)
@@ -380,6 +383,20 @@
 	    (else (scan (cdr vars) (cdr vals)))))
     (scan (frame-variables frame)
 	  (frame-values frame))))
+
+;; 4.16
+(define (scan-out-defines body)
+  (define (unassigned-variables definitions)
+    (map (lambda (x) (list (definition-variable x) ''*unassigned*)) definitions))
+  (define (set-values definitions)
+    (map (lambda (x) (list 'set! (definition-variable x) (definition-value x))) definitions))
+  (let ((definitions (filter definition? body))
+	(rest-body (filter (lambda (x) (not (definition? x))) body)))
+    (if (null? definitions)
+	body
+	(list (append (list 'let (unassigned-variables definitions))
+		      (set-values definitions)
+		      rest-body)))))
 
 
 ;; 4.1.4 Running the Evaluator as a Program

@@ -15,38 +15,40 @@
                 (frame-values frame)))))
   (env-loop env))
 
-(lambda <vars>
-  (define u <e1>)
-  (define v <e2>)
-  <e3>)
+;; (lambda <vars>
+;;   (define u <e1>)
+;;   (define v <e2>)
+;;   <e3>)
 
-(lambda <vars>
-  (let ((u '*unassigned*)
-	(v '*unassigned*))
-    (set! u <e1>)
-    (set! v <e2>)
-    <e3>))
-
-(define (lambda-defines exps)
-  (filter definition? exps))
-
-(define (lambda-expressions exps)
-  (filter (lambda (exp) (not (definition? exp))) exps))
-
-(define (make-assignment name new-value)
-  (list 'set! name new-value))
+;; (lambda <vars>
+;;   (let ((u '*unassigned*)
+;; 	(v '*unassigned*))
+;;     (set! u <e1>)
+;;     (set! v <e2>)
+;;     <e3>))
 
 (define (scan-out-defines body)
-  (let ((internal-defines (lambda-defines body)))
-    (let ((vars (map definition-variable internal-defines))
-	  (vals (map definition-value internal-defines)))
-      (if (null? vars)
-	  body
-	  (list
-	   (make-let (map (lambda (var) (list var '*unassigned*))
-			  vars)
-		     (append
-		      (map (lambda (var val) (make-assignment var val))
-			   vars vals)
-		      (lambda-expressions body))))))))
-				  
+  (define (unassigned-variables definitions)
+    (map (lambda (x) (list (definition-variable x) ''*unassigned*)) definitions))
+  (define (set-values definitions)
+    (map (lambda (x) (list 'set! (definition-variable x) (definition-value x))) definitions))
+  (let ((definitions (filter definition? body))
+	(rest-body (filter (lambda (x) (not (definition? x))) body)))
+    (if (null? definitions)
+	body
+	(list (append (list 'let (unassigned-variables definitions))
+		      (set-values definitions)
+		      rest-body)))))
+
+;; make-procedure
+(define (make-procedure parameters body env)
+  (list 'procedure parameters (scan-out-defines body) env))
+;; evalの前に呼び出される
+
+;; procedure-body
+(define (procedure-body p) (scan-out-defines (cadddr p)))
+;; user-printとapplyで呼び出される
+;; 特にapplyは実行頻度が高いため効率がよくない
+
+
+(driver-loop)

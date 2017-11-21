@@ -39,6 +39,8 @@
 	((let? exp) (eval (let->combination exp) env))
 	;; Question 4.07
 	((let*? exp) (eval (let*->nested-lets exp) env))
+	;; Question 4.20
+	((letrec? exp) (eval (letrec->let exp) env))
 	;; Question 4.09
 	((while? exp) (eval (while->let exp) env))
 	;; Question 4.13
@@ -398,6 +400,21 @@
 		      (set-values definitions)
 		      rest-body)))))
 
+;; Question 4.20
+(define (letrec? exp) (tagged-list? exp 'letrec))
+(define (letrec-clauses exp) (cadr exp))
+(define (letrec-variables exp) (map car (letrec-clauses exp)))
+(define (letrec-expressions exp) (map cdr (letrec-clauses exp)))
+(define (letrec-body exp) (cddr exp))
+
+(define (letrec->let exp)
+  (cons 'let
+	(cons (map (lambda (x) (list x ''*unssigned*))
+		   (letrec-variables exp))
+	      (append (map (lambda (x y) (cons 'set! (cons x y)))
+			   (letrec-variables exp)
+			   (letrec-expressions exp))
+		      (letrec-body exp)))))
 
 ;; 4.1.4 Running the Evaluator as a Program
 (define (setup-environment)

@@ -45,6 +45,8 @@
 	((while? exp) (eval (while->let exp) env))
 	;; Question 4.13
 	((unbind? exp) (eval-unbinding exp env))
+	;; Question 4.26
+	((unless? exp) (eval (unless->if exp) env))
 	((application? exp)
 	 (apply (eval (operator exp) env)
                 (list-of-values (operands exp) env)))
@@ -415,6 +417,17 @@
 			   (letrec-variables exp)
 			   (letrec-expressions exp))
 		      (letrec-body exp)))))
+
+;; Question 4.26
+(define (unless? exp) (tagged-list? exp 'unless))
+(define (unless-condition exp) (cadr exp))
+(define (unless-usual-value exp) (caddr exp))
+(define (unless-exceptional-value exp) (cadddr exp))
+
+(define (unless->if exp)
+  (make-if (unless-condition exp)
+	   (unless-exceptional-value exp)
+	   (unless-usual-value exp)))
 
 ;; 4.1.4 Running the Evaluator as a Program
 (define (setup-environment)

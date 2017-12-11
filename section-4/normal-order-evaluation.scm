@@ -24,7 +24,7 @@
 (define (eval exp env)
   (cond ((self-evaluating? exp) exp)
         ((variable? exp) (lookup-variable-value exp env))
-	((quoted? exp) (text-of-quotation exp))
+	((quoted? exp) (text-of-quotation exp env))
 	((assignment? exp) (eval-assignment exp env))
 	((definition? exp) (eval-definition exp env))
 	((if? exp) (eval-if exp env))
@@ -149,8 +149,19 @@
 (define (quoted? exp)
   (tagged-list? exp 'quote))
 
-(define (text-of-quotation exp) (cadr exp))
+(define (text-of-quotation exp env)
+  (let ((text (cadr exp)))
+    (if (pair? text)
+	(actual-value (text->list text) env)
+	text)))
 
+(define (text->list seq)
+  (if (not (pair? seq))
+      (list 'quote seq)
+      (list 'cons
+	    (text->list (car seq))
+	    (text->list (cdr seq)))))
+	   	
 (define (tagged-list? exp tag)
   (if (pair? exp)
       (eq? (car exp) tag)

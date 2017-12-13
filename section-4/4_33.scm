@@ -13,7 +13,7 @@
 (define (text-of-quotation exp env)
   (let ((text (cadr exp)))
     (if (pair? text)
-	(actual-value (text->list text) env)
+	(eval (text->list text) env)
 	text)))
 
 (define (text->list seq)
@@ -25,6 +25,8 @@
 
 (load "./stream-lazy-list")
 (driver-loop)
+(define x '(a b c))
+
 (car '(a b c))
 (car (cdr '(a b c)))
 (car (cdr (cdr '(a b c))))

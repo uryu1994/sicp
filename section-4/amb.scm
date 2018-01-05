@@ -626,6 +626,9 @@
 	(list 'cadr cadr)
         (list 'cons cons)
         (list 'null? null?)
+	(list 'list list)
+	(list 'eq? eq?)
+	(list 'not not)
 	(list '+ +)
 	(list '- -)
 	(list '* *)
@@ -694,4 +697,19 @@
       (display object)))
 
 (define the-global-environment (setup-environment))
+
+(define (simple-ambeval exp)
+  (ambeval exp
+	   the-global-environment
+	   (lambda (val next-alternative))
+	   (lambda ())))
+
+(for-each simple-ambeval
+	  '((define (require p)
+	      (if (not p) (amb)))
+	    (define (an-element-of items)
+	      (require (not (null? items)))
+	      (amb (car items) (an-element-of (cdr items))))
+	    (define (an-integer-starting-from n)
+	      (amb n (an-integer-starting-from (+ n 1))))))
 ;; (driver-loop)

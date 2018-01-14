@@ -651,6 +651,7 @@
 	(list '* *)
 	(list '/ /)
 	(list '= =)
+	(list 'abs abs)
 	(list 'assoc assoc)
 	(list '< <)
 	(list '> >)

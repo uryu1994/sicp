@@ -84,6 +84,8 @@
         ((assignment? exp) (analyze-assignment exp))
         ((definition? exp) (analyze-definition exp))
         ((if? exp) (analyze-if exp))
+	((and? exp) (analyze (and->if exp)))
+	((or? exp) (analyze (or->if exp)))
         ((lambda? exp) (analyze-lambda exp))
 	((amb? exp) (analyze-amb exp))
         ((begin? exp) (analyze-sequence (begin-actions exp)))
@@ -383,27 +385,37 @@
 (define (and-clauses exp) (cdr exp))
 (define (and-first-exp exp) (car exp))
 (define (and-rest-exps exp) (cdr exp))
-(define (eval-and exp env)
-  (if (null? exp)
-      true
-      (let ((first (eval (and-first-exp exp) env))
-	    (rest (and-rest-exps exp)))
-	(if (true? first)
-	    (eval-and rest env)
-	    false))))
+(define (and->if exp)
+  (expand-and-clauses (and-clauses exp)))
+
+(define (expand-and-clauses clauses)
+  (define (expand-and-iter clauses result)
+    (if (null? clauses)
+        result
+        (let ((first (and-first-exp clauses))
+              (rest (and-rest-exps clauses)))
+	  (make-if first
+		   (expand-and-iter rest first)
+		   'false))))
+  (if (null? clauses)
+      'true
+      (expand-and-iter clauses '())))
 
 (define (or? exp) (tagged-list? exp 'or))
 (define (or-clauses exp) (cdr exp))
 (define (or-first-exp exp) (car exp))
 (define (or-rest-exps exp) (cdr exp))
-(define (eval-or exp env)
-  (if (null? exp)
-      false
-      (let ((first (eval (or-first-exp exp) env))
-	    (rest (or-rest-exps exp)))
-	(if (true? first)
-	    first
-	    (eval-or rest env)))))
+(define (or->if exp)
+  (expand-or-clauses (or-clauses exp)))
+
+(define (expand-or-clauses clauses)
+  (if (null? clauses)
+      'false
+      (let ((first (or-first-exp clauses))
+            (rest (or-rest-exps clauses)))
+	(make-if first
+		 first
+		 (expand-or-clauses rest)))))
 
 ;; Question 4.06
 (define (let? exp) (tagged-list? exp 'let))
@@ -624,20 +636,30 @@
   (list (list 'car car)
         (list 'cdr cdr)
 	(list 'cadr cadr)
+	(list 'caddr caddr)
+	(list 'cadddr cadddr)
+	(list 'cddddr cddddr)
         (list 'cons cons)
         (list 'null? null?)
 	(list 'list list)
 	(list 'eq? eq?)
 	(list 'not not)
+	(list 'member member)
+	(list 'memq memq)
 	(list '+ +)
 	(list '- -)
 	(list '* *)
+	(list '/ /)
 	(list '= =)
 	(list 'assoc assoc)
 	(list '< <)
+	(list '> >)
+	(list '<= <=)
+	(list '>= >=)
 	(list 'print print)
 	;;⟨基本手続きが続く⟩
         ))
+
 (define (primitive-procedure-names)
   (map car
        primitive-procedures))
@@ -707,9 +729,17 @@
 (for-each simple-ambeval
 	  '((define (require p)
 	      (if (not p) (amb)))
+	    (define (xor a b)
+	      (or (and a (not b)) (and (not a) b)))
 	    (define (an-element-of items)
 	      (require (not (null? items)))
 	      (amb (car items) (an-element-of (cdr items))))
 	    (define (an-integer-starting-from n)
-	      (amb n (an-integer-starting-from (+ n 1))))))
+	      (amb n (an-integer-starting-from (+ n 1))))
+	    (define (distinct? items)
+	      (cond ((null? items) true)
+		    ((null? (cdr items)) true)
+		    ((member (car items) (cdr items)) false)
+		    (else (distinct? (cdr items)))))
+	    ))
 ;; (driver-loop)

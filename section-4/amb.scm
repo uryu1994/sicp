@@ -90,6 +90,8 @@
 	((amb? exp) (analyze-amb exp))
 	;; Question 4.50
 	((ramb? exp) (analyze-ramb exp))
+	;; Question 4.51
+	((passingment? exp) (analyze-permanent-assignment exp))
         ((begin? exp) (analyze-sequence (begin-actions exp)))
         ((cond? exp) (analyze (cond->if exp)))
 	((let? exp) (analyze (let->combination exp)))
@@ -122,6 +124,18 @@
 	      (choice env succeed (lambda ()
 				    (try-next (delete choice choices)))))))
       (try-next cprocs))))
+
+;; Question 4.51
+(define (passingment? exp) (tagged-list? exp 'permanent-set!))
+(define (analyze-permanent-assignment exp)
+  (let ((var (assignment-variable exp))
+	(vproc (analyze (assignment-value exp))))
+    (lambda (env succeed fail)
+      (vproc env
+	     (lambda (val fail2)
+	       (set-variable-value! var val env)
+	       (succeed 'ok fail2))
+	     fail))))
 
 (define (analyze-self-evaluating exp)
   (lambda (env succeed fail)

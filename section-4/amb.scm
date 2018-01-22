@@ -94,6 +94,8 @@
 	((ramb? exp) (analyze-ramb exp))
 	;; Question 4.51
 	((passingment? exp) (analyze-permanent-assignment exp))
+	;; Question 4.53
+	((require? exp) (analyze-require exp))
         ((begin? exp) (analyze-sequence (begin-actions exp)))
         ((cond? exp) (analyze (cond->if exp)))
 	((let? exp) (analyze (let->combination exp)))
@@ -151,7 +153,20 @@
 	     succeed
 	     (lambda ()
 	       (fproc env succeed fail))))))
-	
+
+;; Question 4.53
+(define (require? exp) (tagged-list? exp 'require))
+(define (require-predicate exp) (cadr exp))
+
+(define (analyze-require exp)
+  (let ((pproc (analyze (require-predicate exp))))
+    (lambda (env succeed fail)
+      (pproc env
+             (lambda (pred-value fail2)
+               (if (false? pred-value)
+                   (fail2)
+                   (succeed 'ok fail2)))
+             fail))))
 
 (define (analyze-self-evaluating exp)
   (lambda (env succeed fail)
@@ -781,8 +796,9 @@
 	   (lambda ())))
 
 (for-each simple-ambeval
-	  '((define (require p)
-	      (if (not p) (amb)))
+	  '(
+	    ;;(define (require p)
+	    ;;   (if (not p) (amb)))
 	    (define (xor a b)
 	      (or (and a (not b)) (and (not a) b)))
 	    (define (an-element-of items)

@@ -705,6 +705,7 @@
 	(list 'abs abs)
 	(list 'assoc assoc)
 	(list 'even? even?)
+	(list 'remainder remainder)
 	(list '< <)
 	(list '> >)
 	(list '<= <=)

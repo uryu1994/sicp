@@ -88,6 +88,8 @@
 	((or? exp) (analyze (or->if exp)))
         ((lambda? exp) (analyze-lambda exp))
 	((amb? exp) (analyze-amb exp))
+	;; Question 4.50
+	((ramb? exp) (analyze-ramb exp))
         ((begin? exp) (analyze-sequence (begin-actions exp)))
         ((cond? exp) (analyze (cond->if exp)))
 	((let? exp) (analyze (let->combination exp)))
@@ -101,6 +103,25 @@
 
 (define (ambeval exp env succeed fail)
   ((analyze exp) env succeed fail))
+
+(use srfi-27)
+;; Question 4.50
+(define (ramb? exp) (tagged-list? exp 'ramb))
+(define (ramb-choices exp) (cdr exp))
+(define (analyze-ramb exp)
+  (let ((cprocs (map analyze (ramb-choices exp))))
+    (define (delete x seq)
+      (cond ((null? seq) '())
+	    ((equal? x (car seq)) (cdr seq))
+	    (else (cons (car seq) (delete x (cdr seq))))))
+    (lambda (env succeed fail)
+      (define (try-next choices)
+	(if (null? choices)
+	    (fail)
+	    (let ((choice (list-ref choices (random-integer (length choices)))))
+	      (choice env succeed (lambda ()
+				    (try-next (delete choice choices)))))))
+      (try-next cprocs))))
 
 (define (analyze-self-evaluating exp)
   (lambda (env succeed fail)

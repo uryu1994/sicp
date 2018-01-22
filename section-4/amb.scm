@@ -84,6 +84,8 @@
         ((assignment? exp) (analyze-assignment exp))
         ((definition? exp) (analyze-definition exp))
         ((if? exp) (analyze-if exp))
+	;; Question 4.52
+	((if-fail? exp) (analyze-if-fail exp))
 	((and? exp) (analyze (and->if exp)))
 	((or? exp) (analyze (or->if exp)))
         ((lambda? exp) (analyze-lambda exp))
@@ -136,6 +138,20 @@
 	       (set-variable-value! var val env)
 	       (succeed 'ok fail2))
 	     fail))))
+
+;; Question 4.52
+(define (if-fail? exp) (tagged-list? exp 'if-fail))
+(define (if-succeed exp) (cadr exp))
+(define (if-failed exp) (caddr exp))
+(define (analyze-if-fail exp)
+  (let ((sproc (analyze (if-succeed exp)))
+	(fproc (analyze (if-failed exp))))
+    (lambda (env succeed fail)
+      (sproc env
+	     succeed
+	     (lambda ()
+	       (fproc env succeed fail))))))
+	
 
 (define (analyze-self-evaluating exp)
   (lambda (env succeed fail)
@@ -688,6 +704,7 @@
 	(list '= =)
 	(list 'abs abs)
 	(list 'assoc assoc)
+	(list 'even? even?)
 	(list '< <)
 	(list '> >)
 	(list '<= <=)

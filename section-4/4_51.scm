@@ -34,3 +34,12 @@
   (permanent-set! count (+ count 1))
   (require (not (eq? x y)))
   (list x y count))
+
+(define count 0)
+
+(let ((x (an-element-of '(a b c)))
+      (y (an-element-of '(a b c))))
+  (set! count (+ count 1))
+  (require (not (eq? x y)))
+  (list x y count))
+

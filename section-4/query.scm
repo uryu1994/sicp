@@ -12,6 +12,8 @@
 (define (extend variable value frame)
   (cons (make-binding variable value) frame))
 
+(define user-initial-environment (interaction-environment))
+
 ;; 4.4.4.1
 (define input-prompt ";;; Query input:")
 (define output-prompt ";;; Query results:")
@@ -406,11 +408,11 @@
 (define (contract-question-mark variable)
   (string->symbol
    (string-append "?" 
-		  (if (number? (cadr variable))
-		      (string-append (symbol->string (caddr variable))
-				     "-"
-				     (number->string (cadr variable)))
-		      (symbol->string (cadr variable))))))
+                  (if (number? (cadr variable))
+                      (string-append (symbol->string (caddr variable))
+                                     "-"
+                                     (number->string (cadr variable)))
+                      (symbol->string (cadr variable))))))
 
 ;; 4.4.4.8
 (define (make-binding variable value)

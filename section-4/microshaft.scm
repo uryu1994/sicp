@@ -1,6 +1,6 @@
 (load "./query")
 
-(for-each add-assertion!
+(for-each add-rule-or-assertion!
           '((address (Bitdiddle Ben) (Slumerville (Ridge Road) 10))
             (job (Bitdiddle Ben) (computer wizard))
             (salary (Bitdiddle Ben) 60000)
@@ -19,10 +19,12 @@
             (job (Tweakit Lem E) (computer technician))
             (salary (Tweakit Lem E) 25000)
             (supervisor (Tweakit Lem E) (Bitdiddle Ben))
+            
             (address (Reasoner Louis) (Slumerville (Pine Tree Road) 80))
             (job (Reasoner Louis) (computer programmer trainee))
             (salary (Reasoner Louis) 30000)
             (supervisor (Reasoner Louis) (Hacker Alyssa P))
+            
             (supervisor (Bitdiddle Ben) (Warbucks Oliver))
 
             (address (Warbucks Oliver) (Swellesley (Top Heap Road)))
@@ -52,5 +54,20 @@
 
             (can-do-job (administration secretary)
                         (administration big wheel))
-            ))
 
+            ;; (rule (lives-near ?person-1 ?person-2)
+            ;;       (and (address ?person-1 (?town . ?rest-1))
+            ;;            (address ?person-2 (?town . ?rest-2))
+            ;;            (not (same ?person-1 ?person-2))))
+            
+            ;; (rule (same ?x ?x))
+
+            ;; (rule (wheel ?person)
+            ;;       (and (supervisor ?middle-manager ?person)
+            ;;            (supervisor ?x ?middle-manager)))
+
+            ;; (rule (outranked-by ?staff-person ?boss)
+            ;;       (or (supervisor ?staff-person ?boss)
+            ;;           (and (supervisor ?staff-person ?middle-manager)
+            ;;                (outranked-by ?middle-manager ?boss))))
+            ))

@@ -15,8 +15,8 @@
 
 ;; b
 (assert! (rule (meeting-time ?person ?day-and-time)
-               (or (meeting whole-company ?day-and-time)
-                   (and (job ?person (?section . ?type))
+               (and (job ?person (?section . ?type))
+                    (or (meeting whole-company ?day-and-time)                
                         (meeting ?person ?day-and-time)))))
 
 ;; c

@@ -10,3 +10,14 @@
               (operation-exp-operands exp))))
     (lambda ()
       (apply op (map (lambda (p) (p)) aprocs)))))
+
+(define label-op-test
+  (make-machine
+   '(a)
+   (list (list '= =) (list '> >))
+   '(test-l
+     main
+     (test (op >) (reg a) (label main))
+     (branch (label done))
+     (assign b (op +) (reg a) (label main))
+     done)))

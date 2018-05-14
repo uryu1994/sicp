@@ -23,6 +23,11 @@
         (list 'if? if?)
         (list 'lambda? lambda?)
         (list 'begin? begin?)
+        ;; Question 5.23
+        (list 'cond? cond?)
+        (list 'cond->if cond->if)
+        (list 'let? let?)
+        (list 'let->combination let->combination)
         (list 'application? application?)
         (list 'lookup-variable-value lookup-variable-value)
         (list 'text-of-quotation text-of-quotation)
@@ -101,9 +106,25 @@
      (branch (label ev-lambda))
      (test (op begin?) (reg exp))
      (branch (label ev-begin))
-     (test (op application?) (reg exp))
+     
+     ;; Question 5.23
+     (test (op cond?) (reg exp))
+     (branch (label ev-cond))
+     (test (op let?) (reg exp))
+     (branch (label ev-let))
+
+     (test (op application?) (reg exp))     
      (branch (label ev-application))
      (goto (label unknown-expression-type))
+     
+     ;; Question 5.23
+     ev-cond
+     (assign exp (op cond->if) (reg exp))
+     (goto (label eval-dispatch))
+     ev-let
+     (assign exp (op let->combination) (reg exp))
+     (goto (label eval-dispatch))
+     
      ;; 5.4.1 単純式の評価
      ev-self-eval
      (assign val (reg exp))

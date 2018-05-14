@@ -405,6 +405,7 @@
 	(list '= =)
 	(list 'assoc assoc)
 	(list '< <)
+    (list '> >)
 	(list 'print print)
 	;;⟨基本手続きが続く⟩
         ))

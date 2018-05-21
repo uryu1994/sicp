@@ -28,6 +28,15 @@
         (list 'cond->if cond->if)
         (list 'let? let?)
         (list 'let->combination let->combination)
+        ;; Question 5.24
+        (list 'cond-clauses cond-clauses)
+        (list 'cond-else-clause? cond-else-clause?)
+        (list 'cond-predicate cond-predicate)
+        (list 'cond-actions cond-actions)
+        (list 'null? null?)
+        (list 'car car)
+        (list 'cdr cdr)
+        
         (list 'application? application?)
         (list 'lookup-variable-value lookup-variable-value)
         (list 'text-of-quotation text-of-quotation)
@@ -118,9 +127,9 @@
      (goto (label unknown-expression-type))
      
      ;; Question 5.23
-     ev-cond
-     (assign exp (op cond->if) (reg exp))
-     (goto (label eval-dispatch))
+    ;;  ev-cond
+    ;;  (assign exp (op cond->if) (reg exp))
+    ;;  (goto (label eval-dispatch))
      ev-let
      (assign exp (op let->combination) (reg exp))
      (goto (label eval-dispatch))
@@ -239,6 +248,43 @@
      ev-if-consequent
      (assign exp (op if-consequent) (reg exp))
      (goto (label eval-dispatch))
+     
+     ;; Question 5.24
+     ev-cond
+     (assign unev (op cond-clauses) (reg exp))
+     (save continue)
+     (goto (label ev-cond-loop))
+     ev-cond-loop
+     (test (op null?) (reg unev))
+     (branch (label ev-cond-null))
+     (assign exp (op car) (reg unev))
+     (test (op cond-else-clause?) (reg exp))
+     (branch (label ev-cond-else))
+     (save exp)
+     (assign exp (op cond-predicate) (reg exp))
+     (save unev)
+     (save env)
+     (assign continue (label ev-cond-decide))
+     (goto (label eval-dispatch))
+     ev-cond-decide
+     (restore env)
+     (restore unev)
+     (restore exp)
+     (test (op true?) (reg val))
+     (branch (label ev-cond-consequent))
+     (assign unev (op cdr) (reg unev))
+     (goto (label ev-cond-loop))
+     ev-cond-consequent
+     (assign unev (op cond-actions) (reg exp))
+     (goto (label ev-sequence))
+     ev-cond-else
+     (assign unev (op cond-actions) (reg exp))
+     (goto (label ev-sequence)) 
+     ev-cond-null
+     (restore continue)
+     (assign val (const #f))
+     (goto (reg continue))
+
      ;; 代入
      ev-assignment
      (assign unev (op assignment-variable) (reg exp))

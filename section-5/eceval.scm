@@ -1,5 +1,5 @@
 (load "./no-apply-eval")
-(load "./register")
+(load "./register-analyze")
 
 (define (empty-arglist) '())
 
@@ -77,7 +77,7 @@
         (list 'get-global-environment get-global-environment)
         (list 'announce-output announce-output)
         (list 'user-print user-print)
-        ))
+       ))
 
 (define eceval
   (make-machine
@@ -93,6 +93,7 @@
      (assign continue (label print-result))
      (goto (label eval-dispatch))
      print-result
+     (perform (op print-stack-statistics))
      (perform
       (op announce-output) (const ";;; EC-Eval value:"))
      (perform (op user-print) (reg val))
@@ -330,6 +331,8 @@
      signal-error
      (perform (op user-print) (reg val))
      (goto (label read-eval-print-loop))
+
+     
      )))
 
 (start eceval)

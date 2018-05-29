@@ -1,83 +1,4 @@
-(load "./no-apply-eval")
-(load "./register-analyze")
-
-(define (empty-arglist) '())
-
-(define (adjoin-arg arg arglist)
-  (append arglist (list arg)))
-
-(define (last-operand? ops)
-  (null? (cdr ops)))
-
-(define the-global-environment (setup-environment))
-
-(define (get-global-environment)
-  the-global-environment)
-
-(define eceval-operations               
-  (list (list 'self-evaluating? self-evaluating?)
-        (list 'variable? variable?)
-        (list 'quoted? quoted?)
-        (list 'assignment? assignment?)
-        (list 'definition? definition?)
-        (list 'if? if?)
-        (list 'lambda? lambda?)
-        (list 'begin? begin?)
-        ;; Question 5.23
-        (list 'cond? cond?)
-        (list 'cond->if cond->if)
-        (list 'let? let?)
-        (list 'let->combination let->combination)
-        ;; Question 5.24
-        (list 'cond-clauses cond-clauses)
-        (list 'cond-else-clause? cond-else-clause?)
-        (list 'cond-predicate cond-predicate)
-        (list 'cond-actions cond-actions)
-        (list 'null? null?)
-        (list 'car car)
-        (list 'cdr cdr)
-        
-        (list 'application? application?)
-        (list 'lookup-variable-value lookup-variable-value)
-        (list 'text-of-quotation text-of-quotation)
-        (list 'lambda-parameters lambda-parameters)
-        (list 'lambda-body lambda-body)
-        (list 'make-procedure make-procedure)
-        (list 'operands operands)
-        (list 'operator operator)
-        (list 'empty-arglist empty-arglist)
-        (list 'no-operands? no-operands?)
-        (list 'first-operand first-operand)
-        (list 'last-operand? last-operand?)
-        (list 'adjoin-arg adjoin-arg)
-        (list 'rest-operands rest-operands)
-        (list 'primitive-procedure? primitive-procedure?)
-        (list 'compound-procedure? compound-procedure?)
-        (list 'apply-primitive-procedure apply-primitive-procedure)
-        (list 'procedure-parameters procedure-parameters)
-        (list 'procedure-environment procedure-environment)
-        (list 'extend-environment extend-environment)
-        (list 'procedure-body procedure-body)
-        (list 'begin-actions begin-actions)
-        (list 'first-exp first-exp)
-        (list 'last-exp? last-exp?)
-        (list 'rest-exps rest-exps)
-        (list 'if-predicate if-predicate)
-        (list 'true? true?)
-        (list 'if-alternative if-alternative)
-        (list 'if-consequent if-consequent)
-        (list 'assignment-variable assignment-variable)
-        (list 'assignment-value assignment-value)
-        (list 'set-variable-value! set-variable-value!)
-        (list 'definition-variable definition-variable)
-        (list 'definition-value definition-value)
-        (list 'define-variable! define-variable!)
-        (list 'prompt-for-input prompt-for-input)
-        (list 'read read)
-        (list 'get-global-environment get-global-environment)
-        (list 'announce-output announce-output)
-        (list 'user-print user-print)
-       ))
+(load "./eceval")
 
 (define eceval
   (make-machine
@@ -122,15 +43,15 @@
      (branch (label ev-cond))
      (test (op let?) (reg exp))
      (branch (label ev-let))
-
+     
      (test (op application?) (reg exp))     
      (branch (label ev-application))
      (goto (label unknown-expression-type))
      
      ;; Question 5.23
-    ;;  ev-cond
-    ;;  (assign exp (op cond->if) (reg exp))
-    ;;  (goto (label eval-dispatch))
+     ;;  ev-cond
+     ;;  (assign exp (op cond->if) (reg exp))
+     ;;  (goto (label eval-dispatch))
      ev-let
      (assign exp (op let->combination) (reg exp))
      (goto (label eval-dispatch))
@@ -153,15 +74,22 @@
      ;; 5.4.1 手続き作用の評価
      ev-application
      (save continue)
-     (save env)
      (assign unev (op operands) (reg exp))
-     (save unev)
      (assign exp (op operator) (reg exp))
+     (test (op variable?) (reg exp))
+     (branch (label ev-appl-symbol-operator))
+     (save env)
+     (save unev)
      (assign continue (label ev-appl-did-operator))
+     (goto (label eval-dispatch))
+     ev-appl-symbol-operator
+     (save unev)
+     (assign continue (label ev-appl-did-symbol-operator))
      (goto (label eval-dispatch))
      ev-appl-did-operator
      (restore unev) ; 被演算子
      (restore env)
+     ev-appl-did-symbol-operator
      (assign argl (op empty-arglist))
      (assign proc (reg val)) ; 演算子
      (test (op no-operands?) (reg unev))
@@ -285,7 +213,7 @@
      (restore continue)
      (assign val (const #f))
      (goto (reg continue))
-
+     
      ;; 代入
      ev-assignment
      (assign unev (op assignment-variable) (reg exp))
@@ -330,9 +258,11 @@
      (goto (label signal-error))
      signal-error
      (perform (op user-print) (reg val))
-     (goto (label read-eval-print-loop))
-
-     
+     (goto (label read-eval-print-loop))     
      )))
 
-;; (start eceval)
+;; b. Alyssa P. Hackerは, 評価器を拡張し, 更に多くの特別な場合を認識させれば, 
+;;    翻訳系の最適化のすべてを組み込むことが出来, 翻訳系の利点をすべて除けると示唆した. 
+;;    この考えをどう思うか. 
+;; ->  特別な場合を全部網羅しようとするとtest/branchといった条件分岐が発生してさらにその先で…のような
+;;     ステップ数が増えるので命令の実行回数がその分増える可能性がある

@@ -6,7 +6,7 @@
     (list op1 op2)))
 
 (define (open-code? exp)
-  (memq (car exp) '(+ - * /)))
+  (memq (car exp) '(= + - *)))
 
 (define (compile-open-code exp target linkage)
   (if (= (length exp) 3)

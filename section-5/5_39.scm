@@ -18,10 +18,10 @@
                (list-ref env (frame-number address)))))
     (list-set! vals (displacement-number address) val)))
 
-(define test
-  (list (make-frame '(a b c d) '(1 2 3 4))
-        (make-frame '(x y) '(5 6))))
+;; (define test
+;;   (list (make-frame '(a b c d) '(1 2 3 4))
+;;         (make-frame '(x y) '(5 6))))
 
-(lexical-address-lookup (make-address 1 0) test)
-(lexical-address-set! (make-address 1 0) 10 test)
-(lexical-address-lookup (make-address 1 0) test)
+;; (lexical-address-lookup (make-address 1 0) test)
+;; (lexical-address-set! (make-address 1 0) 10 test)
+;; (lexical-address-lookup (make-address 1 0) test)

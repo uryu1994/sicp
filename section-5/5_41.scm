@@ -1,8 +1,4 @@
-(load "./no-apply-eval")
-
-(define (make-address fnum dnum) (list fnum dnum))
-(define (frame-number address) (car address))
-(define (displacement-number address) (cadr address))
+(load "./5_39")
 
 (define (find-variable var ct-env)
   (define (frame-iter frames frame-num)
@@ -20,8 +16,8 @@
             (scan-iter (cdr frame) frame-num (+ disp-num 1)))))
   (frame-iter ct-env 0))
 
-(find-variable 'c '((y z) (a b c d e) (x y)))
+;; (find-variable 'c '((y z) (a b c d e) (x y)))
 
-(find-variable 'x '((y z) (a b c d e) (x y)))
+;; (find-variable 'x '((y z) (a b c d e) (x y)))
 
-(find-variable 'w '((y z) (a b c d e) (x y)))
+;; (find-variable 'w '((y z) (a b c d e) (x y)))

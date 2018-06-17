@@ -69,15 +69,15 @@
                (assign ,target (const ok)))
              )))))))
 
-(parse-compiled-code
-  (compile
-   '(lambda (x y)
-      (lambda (a b)
-        (+
-         (+ x a)
-         (* y b)
-         (set! x a)
-         (set! z b))))
-   'val
-   'next
-   '()))
+;; (parse-compiled-code
+;;   (compile
+;;    '(lambda (x y)
+;;       (lambda (a b)
+;;         (+
+;;          (+ x a)
+;;          (* y b)
+;;          (set! x a)
+;;          (set! z b))))
+;;    'val
+;;    'next
+;;    '()))

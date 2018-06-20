@@ -43,7 +43,7 @@
                            linkage
                            cenv))
         ((cond? exp) (compile (cond->if exp) target linkage cenv))
-        ((open-code? exp) (compile-open-code exp target linkage cenv))
+        ((open-code-operator? exp) (compile-open-code exp target linkage cenv))
         ((application? exp)
          (compile-application exp target linkage cenv))
         (else
